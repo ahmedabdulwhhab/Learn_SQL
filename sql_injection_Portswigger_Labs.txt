@@ -2,6 +2,17 @@ All labs
 https://portswigger.net/web-security/all-labs#sql-injection
 -------------------------------------------------------------
 Introduction for SQL
+
+INSERT INTO "main"."table1" ("ID", "Name", "PN", "Tel", "Country") VALUES ('1', 'Ah', '1972', '01001', 'Meet Azon');
+INSERT INTO "main"."table1" ("ID", "Name", "PN", "Tel", "Country") VALUES ('2', 'Ha', '1973', '01002', 'Meet Azon');
+INSERT INTO "main"."table1" ("ID", "Name", "PN", "Tel", "Country") VALUES ('3', 'Sa', '1979', '01007', 'Meet Azon');
+INSERT INTO "main"."table1" ("ID", "Name", "PN", "Tel", "Country") VALUES ('4', 'Ma', '1975', '01017', 'khaleeg');
+INSERT INTO "main"."table1" ("ID", "Name", "PN", "Tel", "Country") VALUES ('5', 'Kha', '1997', '01107', 'Meet Ali');
+
+SELECT CASE WHEN SUBSTR(Country,2,1)='e' THEN 'True' ELSE 'False' END FROM table1 WHERE Name='Ah'
+
+
+
 INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
 VALUES
 ('Cardinal', 'Tom B. Erichsen', 'Skagen 21', 'Stavanger', '4006', 'Norway'),
