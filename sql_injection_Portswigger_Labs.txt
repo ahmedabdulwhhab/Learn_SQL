@@ -338,8 +338,7 @@ https://0ae500be03f831a98299f2a000d2000a.web-security-academy.net/filter?categor
 
 --------------------------------------------------------------
 
-		ahmed.abdulwhhab@std.mans.edu.eg
-		-y:8xM*3^;aL/R%H2J2XC=E-9optY5M2
+
 
 all labs https://portswigger.net/web-security/all-labs
 
